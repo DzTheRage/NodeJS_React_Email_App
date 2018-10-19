@@ -29,26 +29,19 @@ passport.use(
       proxy: true
     },
     // Callback
-    (accessToken, refreshToken, profile, done) => {
+    async (accessToken, refreshToken, profile, done) => {
       // All of Google User's Info found
-
       // Query with mongoose to check user with PROMISE
 
-      User.findOne({ googleId: profile.id }).then(existingUser => {
-        if (existingUser) {
-          /// Existing User Found
-          // tell passport we're finished // done(error, userRecord)
-
-          done(null, existingUser);
-        } else {
-          // New User
-          new User({ googleId: profile.id }).save().then(user => {
-            // tell passport we're finished // done(error, userRecord)
-
-            done(null, user);
-          });
-        }
-      });
+      const existingUser = await User.findOne({ googleId: profile.id });
+      if (existingUser) {
+        /// Existing User Found
+        // tell passport we're finished // done(error, userRecord)
+        return done(null, existingUser);
+      }
+      // New User
+      const user = await new User({ googleId: profile.id }).save();
+      done(null, user);
     }
   )
 );

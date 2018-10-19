@@ -9,13 +9,19 @@ module.exports = app => {
     passport.authenticate('google', { scope: ['profile', 'email'] })
   );
   // Google AuthCode Router Handler
-  app.get('/auth/google/callback', passport.authenticate('google'));
+  app.get(
+    '/auth/google/callback',
+    passport.authenticate('google'),
+    (req, res) => {
+      res.redirect('/surveys');
+    }
+  );
 
   // Logout
   app.get('/api/logout', (req, res) => {
     // passport logout method
     req.logout();
-    res.send(req.user);
+    res.redirect('/');
   });
 
   // GET Request to App
